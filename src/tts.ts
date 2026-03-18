@@ -42,11 +42,13 @@ function resolveOpenAIVoice(configured: string | undefined): string {
  */
 export class OpenAITTS implements TTSProvider {
   private apiKey: string;
+  private baseUrl: string;
   private model: string;
   private voice: string;
 
   constructor(config: DiscordVoiceConfig) {
     this.apiKey = config.openai?.apiKey || process.env["OPENAI_API_KEY"] || "";
+    this.baseUrl = config.openai?.baseUrl || "https://api.openai.com/v1";
     this.model = config.openai?.ttsModel || "tts-1";
     this.voice = resolveOpenAIVoice(config.openai?.voice);
 
@@ -56,7 +58,7 @@ export class OpenAITTS implements TTSProvider {
   }
 
   async synthesize(text: string): Promise<TTSResult> {
-    const response = await fetch("https://api.openai.com/v1/audio/speech", {
+    const response = await fetch(`${this.baseUrl}/audio/speech`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,

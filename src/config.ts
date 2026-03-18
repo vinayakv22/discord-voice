@@ -66,6 +66,8 @@ export interface DiscordVoiceConfig {
 
   openai?: {
     apiKey?: string;
+    /** Base URL for OpenAI-compatible API. Default: https://api.openai.com/v1. Use http://localhost:8080/v1 for LocalAI */
+    baseUrl?: string;
     whisperModel?: string;
     ttsModel?: string;
     /** OpenAI TTS voice: nova, shimmer, echo, onyx, fable, alloy, ash, sage, coral. Default: nova */
@@ -421,6 +423,7 @@ export function parseConfig(raw: unknown, mainConfig?: MainConfig): DiscordVoice
       if (!apiKey) return undefined;
       return {
         apiKey,
+        baseUrl: (o?.["baseUrl"] as string | undefined) || undefined,
         whisperModel: (o?.["whisperModel"] as string) || "whisper-1",
         ttsModel: (o?.["ttsModel"] as string) || "tts-1",
         voice:
