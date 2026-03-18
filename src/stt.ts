@@ -32,10 +32,12 @@ export interface STTProvider {
  */
 export class WhisperSTT implements STTProvider {
   private apiKey: string;
+  private baseUrl: string;
   private model: string;
 
   constructor(config: DiscordVoiceConfig) {
     this.apiKey = config.openai?.apiKey || process.env["OPENAI_API_KEY"] || "";
+    this.baseUrl = config.openai?.baseUrl || "https://api.openai.com/v1";
     this.model = config.openai?.whisperModel || "whisper-1";
 
     if (!this.apiKey) {
@@ -52,7 +54,7 @@ export class WhisperSTT implements STTProvider {
     formData.append("model", this.model);
     formData.append("response_format", "json");
 
-    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    const response = await fetch(`${this.baseUrl}/audio/transcriptions`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
@@ -121,10 +123,12 @@ function pcmToWavOpenAI(pcmBuffer: Buffer, sampleRate: number): Buffer {
  */
 export class OpenAITranscribeSTT implements STTProvider {
   private apiKey: string;
+  private baseUrl: string;
   private model: string;
 
   constructor(config: DiscordVoiceConfig, model: string) {
     this.apiKey = config.openai?.apiKey || process.env["OPENAI_API_KEY"] || "";
+    this.baseUrl = config.openai?.baseUrl || "https://api.openai.com/v1";
     this.model = model;
 
     if (!this.apiKey) {
@@ -140,7 +144,7 @@ export class OpenAITranscribeSTT implements STTProvider {
     formData.append("model", this.model);
     formData.append("response_format", "json");
 
-    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    const response = await fetch(`${this.baseUrl}/audio/transcriptions`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
