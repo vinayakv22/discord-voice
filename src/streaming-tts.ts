@@ -49,11 +49,13 @@ export interface StreamingTTSProvider {
  */
 export class OpenAIStreamingTTS implements StreamingTTSProvider {
   private apiKey: string;
+  private baseUrl: string;
   private model: string;
   private voice: string;
 
   constructor(config: DiscordVoiceConfig) {
     this.apiKey = config.openai?.apiKey || process.env["OPENAI_API_KEY"] || "";
+    this.baseUrl = config.openai?.baseUrl || "https://api.openai.com/v1";
     this.model = config.openai?.ttsModel || "tts-1";
     this.voice = resolveOpenAIVoice(config.openai?.voice);
 
@@ -67,7 +69,7 @@ export class OpenAIStreamingTTS implements StreamingTTSProvider {
   }
 
   async synthesizeStream(text: string): Promise<StreamingTTSResult> {
-    const response = await fetch("https://api.openai.com/v1/audio/speech", {
+    const response = await fetch(`${this.baseUrl}/audio/speech`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
